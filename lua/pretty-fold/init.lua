@@ -3,7 +3,12 @@ local wo = vim.wo
 local fn = vim.fn
 local api = vim.api
 
-ffi.cdef('int curwin_col_off(void);')
+
+ffi.cdef [[
+  typedef struct window_S win_T;
+  int win_col_off(win_T *wp);
+  extern win_T *curwin;
+]]
 
 local M = {
    foldtext = {}, -- Table with all 'foldtext' functions.
@@ -82,7 +87,7 @@ local function fold_text(config)
    ---The width of offset of a window, occupied by line number column,
    ---fold column and sign column.
    ---@type number
-   local gutter_width = ffi.C.curwin_col_off()
+   local gutter_width = ffi.C.win_col_off(ffi.C.curwin)
 
    local visible_win_width = api.nvim_win_get_width(0) - gutter_width
 
